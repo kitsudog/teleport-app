@@ -1,0 +1,29 @@
+version: v3
+teleport:
+  nodename: teleport
+  data_dir: /data/teleport
+  join_params:
+    token_name: 
+    method: token
+  proxy_server: 
+  log:
+    output: stderr
+    severity: INFO
+    format:
+      output: text
+  ca_pin: ""
+  diag_addr: ""
+auth_service:
+  enabled: "no"
+ssh_service:
+  enabled: "no"
+proxy_service:
+  enabled: "no"
+  https_keypairs: []
+  https_keypairs_reload_interval: 0s
+  acme: {}
+app_service:
+  enabled: "yes"
+  debug_app: false
+  mcp_demo_server: false
+  apps:
