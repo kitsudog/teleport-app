@@ -33,28 +33,32 @@ for I in `env|grep APP_|grep _NAME|sort -n|cut -d= -f1|grep '[0-9]*' -o`;do
   if [ -z "${!APP_NAME}" ];then
     continue
   fi
+  APP_NAME=${!APP_NAME}
+  APP_URL=${!APP_URL:-${DEFAULT_URL}} 
+  APP_LABEL=${!APP_LABEL}
+  APP_HOST=${!APP_HOST}
   yq -y -i ".app_service.apps += [
    {
-      \"name\":\"${!APP_NAME}\",
-      \"uri\":\"${!APP_URL}\",
+      \"name\":\"${APP_NAME}\",
+      \"uri\":\"${APP_URL}\",
       \"labels\":{
-         \"app-name\":\"${!APP_NAME}\"
+         \"app-name\":\"${APP_NAME}\"
       },
       \"rewrite\":{
          \"headers\":[]
       }
    }
 ]" app_config.yaml
-  if [ "${DEFAULT_LABEL};${!APP_LABEL}" ];then
+  if [ "${DEFAULT_LABEL};${APP_LABEL}" ];then
     while IFS= read -r kv; do
       [[ -z $kv ]] && continue        # 跳过空段
       KEY=${kv%%=*}                   # 取 key
       VALUE=${kv#*=}                  # 取 value
       yq -y -i ".app_service.apps[-1].labels += {\"${KEY}\":\"${VALUE}\"}" app_config.yaml
-    done < <(tr ';' '\n' <<<"${DEFAULT_LABEL};${!APP_LABEL}")
+    done < <(tr ';' '\n' <<<"${DEFAULT_LABEL};${APP_LABEL}")
   fi
-  if [ "${!APP_HOST}" ];then
-    yq -y -i ".app_service.apps[-1].rewrite.headers += [\"host: ${!APP_HOST}\"]" app_config.yaml
+  if [ "${APP_HOST}" ];then
+    yq -y -i ".app_service.apps[-1].rewrite.headers += [\"host: ${APP_HOST}\"]" app_config.yaml
   fi 
 done
 cat app_config.yaml
