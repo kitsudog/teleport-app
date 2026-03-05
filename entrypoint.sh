@@ -52,8 +52,20 @@ for I in `env|grep APP_|grep _NAME|sort -n|cut -d= -f1|grep '[0-9]*' -o`;do
   if [ "${DEFAULT_LABEL};${APP_LABEL}" ];then
     while IFS= read -r kv; do
       [[ -z $kv ]] && continue        # 跳过空段
-      KEY=${kv%%=*}                   # 取 key
-      VALUE=${kv#*=}                  # 取 value
+      case "$kv" in
+          *=*)
+              KEY="${kv%%=*}"
+              VALUE="${kv#*=}"
+              ;;
+          *:*)
+              KEY="${kv%%:*}"
+              VALUE="${kv#*:}"
+              ;;
+          *)
+              echo "⚠️  跳过无效格式: $kv" >&2
+              continue
+              ;;
+      esac
       yq -y -i ".app_service.apps[-1].labels += {\"${KEY}\":\"${VALUE}\"}" app_config.yaml
     done < <(tr ';' '\n' <<<"${DEFAULT_LABEL};${APP_LABEL}")
   fi
