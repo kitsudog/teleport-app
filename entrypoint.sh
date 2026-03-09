@@ -19,6 +19,11 @@ EOF
   exit 1
 fi
 cd /data
+if [ -z "$NODE_NAME" ];then
+  NODE_IP=$(curl httpbin.org/get|jq .origin -r)
+  NODE_NAME="${HOSTNAME}-${NODE_IP}"
+fi
+yq -y -i ".teleport.nodename = \"${NODE_NAME}\"" app_config.yaml
 yq -y -i ".teleport.join_params.token_name = \"${TELEPORT_TOKEN}\"" app_config.yaml
 yq -y -i ".teleport.proxy_server = \"${TELEPORT_PROXY}\"" app_config.yaml
 if [ ! -z "$APP_NAME" ];then
