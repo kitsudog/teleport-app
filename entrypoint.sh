@@ -8,6 +8,7 @@ EOF
   fi
 
   nohup socat TCP-LISTEN:${APP_PORT:-1443},fork,bind=0.0.0.0 TCP:127.0.0.1:443 &
+  tsh apps ls -i /teleport.pem --proxy=$TELEPORT_PROXY
   tsh proxy app $APP_NAME --port 443 -i /teleport.pem --proxy=$TELEPORT_PROXY
   exit $?
 fi
