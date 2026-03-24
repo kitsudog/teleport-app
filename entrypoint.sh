@@ -76,6 +76,7 @@ server {
         
         # WebSocket 超时设置
         proxy_read_timeout 86400;
+        # todo: text/event-stream 
     }
 }
 EOF
